@@ -2,7 +2,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
 
-
 def _round_to_multiple_of(val, divisor, round_up_bias=0.9):
     """ Asymmetric rounding to make `val` divisible by `divisor`. With default
     bias, will round up, unless the number is no more than 10% greater than the

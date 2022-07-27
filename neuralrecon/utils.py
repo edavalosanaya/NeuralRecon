@@ -1,13 +1,20 @@
 import os
+
 import torch
 import trimesh
 import numpy as np
 import torchvision.utils as vutils
 from skimage import measure
 from loguru import logger
-from tools.render import Visualizer
 import cv2
 
+from .tools.render import Visualizer
+
+# Check first the availability of CUDA in the system
+if torch.cuda.is_available():
+    DEVICE = torch.device('cuda')
+else:
+    DEVICE = torch.device('cpu')
 
 # print arguments
 def print_args(args):
@@ -16,6 +23,17 @@ def print_args(args):
         logger.info("{0: <10}\t{1: <30}\t{2: <20}".format(k, str(v), str(type(v))))
     logger.info("########################################################################")
 
+def update_config(cfg, args):
+    cfg.defrost()
+
+    # Merge configurations
+    cfg.merge_from_file(args.cfg)
+    cfg.merge_from_list(args.opts)
+
+    cfg.freeze()
+
+def check_config(cfg):
+    pass
 
 # torch.no_grad warpper for functions
 def make_nograd_func(func):
@@ -67,6 +85,8 @@ def tensor2numpy(vars):
 
 @make_recursive_func
 def tocuda(vars):
+    if DEVICE != torch.device('cuda'):
+        return vars
     if isinstance(vars, torch.Tensor):
         return vars.cuda()
     elif isinstance(vars, str):
@@ -130,7 +150,7 @@ class DictAverageMeter(object):
         return {k: v / self.count for k, v in self.data.items()}
 
 
-def coordinates(voxel_dim, device=torch.device('cuda')):
+def coordinates(voxel_dim, device=DEVICE):
     """ 3d meshgrid of given size.
 
     Args:

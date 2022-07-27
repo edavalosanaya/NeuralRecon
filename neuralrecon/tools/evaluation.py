@@ -28,12 +28,12 @@ import numpy as np
 import pyrender
 import torch
 import trimesh
-from tools.simple_loader import *
-
-from tools.evaluation_utils import eval_depth, eval_mesh
-from tools.visualize_metrics import visualize
 import open3d as o3d
 import ray
+
+from .simple_loader import *
+from .evaluation_utils import eval_depth, eval_mesh
+from .visualize_metrics import visualize
 
 torch.multiprocessing.set_sharing_strategy('file_system')
 

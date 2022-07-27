@@ -1,6 +1,11 @@
 import torch
 from torch.nn.functional import grid_sample
 
+# Check first the availability of CUDA in the system
+if torch.cuda.is_available():
+    DEVICE = torch.device('cuda')
+else:
+    DEVICE = torch.device('cpu')
 
 def back_project(coords, origin, voxel_size, feats, KRcam):
     '''
@@ -22,8 +27,8 @@ def back_project(coords, origin, voxel_size, feats, KRcam):
     '''
     n_views, bs, c, h, w = feats.shape
 
-    feature_volume_all = torch.zeros(coords.shape[0], c + 1).cuda()
-    count = torch.zeros(coords.shape[0]).cuda()
+    feature_volume_all = torch.zeros(coords.shape[0], c + 1).to(DEVICE)
+    count = torch.zeros(coords.shape[0]).to(DEVICE)
 
     for batch in range(bs):
         batch_ind = torch.nonzero(coords[:, 0] == batch).squeeze(1)
@@ -38,7 +43,7 @@ def back_project(coords, origin, voxel_size, feats, KRcam):
         rs_grid = grid_batch.unsqueeze(0).expand(n_views, -1, -1)
         rs_grid = rs_grid.permute(0, 2, 1).contiguous()
         nV = rs_grid.shape[-1]
-        rs_grid = torch.cat([rs_grid, torch.ones([n_views, 1, nV]).cuda()], dim=1)
+        rs_grid = torch.cat([rs_grid, torch.ones([n_views, 1, nV]).to(DEVICE)], dim=1)
 
         # Project grid
         im_p = proj_batch @ rs_grid

@@ -1,9 +1,14 @@
 import torch
 import torch.nn as nn
 from torchsparse.tensor import PointTensor
-from utils import sparse_to_dense_channel, sparse_to_dense_torch
+from ..utils import sparse_to_dense_channel, sparse_to_dense_torch
 from .modules import ConvGRU
 
+# Check first the availability of CUDA in the system
+if torch.cuda.is_available():
+    DEVICE = torch.device('cuda')
+else:
+    DEVICE = torch.device('cpu')
 
 class GRUFusion(nn.Module):
     """
@@ -44,8 +49,8 @@ class GRUFusion(nn.Module):
                                                 vres=self.cfg.VOXEL_SIZE * 2 ** (self.n_scales - i)))
 
     def reset(self, i):
-        self.global_volume[i] = PointTensor(torch.Tensor([]), torch.Tensor([]).view(0, 3).long()).cuda()
-        self.target_tsdf_volume[i] = PointTensor(torch.Tensor([]), torch.Tensor([]).view(0, 3).long()).cuda()
+        self.global_volume[i] = PointTensor(torch.Tensor([]), torch.Tensor([]).view(0, 3).long()).to(DEVICE)
+        self.target_tsdf_volume[i] = PointTensor(torch.Tensor([]), torch.Tensor([]).view(0, 3).long()).to(DEVICE)
 
     def convert2dense(self, current_coords, current_values, coords_target_global, tsdf_target, relative_origin,
                       scale):
@@ -74,7 +79,7 @@ class GRUFusion(nn.Module):
         global_tsdf_target = self.target_tsdf_volume[scale].F
         global_coords_target = self.target_tsdf_volume[scale].C
 
-        dim = (torch.Tensor(self.cfg.N_VOX).cuda() // 2 ** (self.cfg.N_LAYER - scale - 1)).int()
+        dim = (torch.Tensor(self.cfg.N_VOX).to(DEVICE) // 2 ** (self.cfg.N_LAYER - scale - 1)).int()
         dim_list = dim.data.cpu().numpy().tolist()
 
         # mask voxels that are out of the FBV
@@ -236,7 +241,7 @@ class GRUFusion(nn.Module):
 
             # relative origin in global volume
             relative_origin = (origin - self.global_origin[scale]) / voxel_size
-            relative_origin = relative_origin.cuda().long()
+            relative_origin = relative_origin.to(DEVICE).long()
 
             batch_ind = torch.nonzero(coords[:, 0] == i).squeeze(1)
             if len(batch_ind) == 0:

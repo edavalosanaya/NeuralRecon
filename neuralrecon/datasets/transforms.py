@@ -20,11 +20,11 @@
 
 from PIL import Image, ImageOps
 import numpy as np
-from utils import coordinates
 import transforms3d
 import torch
-from tools.tsdf_fusion.fusion import TSDFVolumeTorch
 
+from ..utils import coordinates
+from ..tools.tsdf_fusion.fusion import TSDFVolumeTorch
 
 class Compose(object):
     """ Apply a list of transforms sequentially"""

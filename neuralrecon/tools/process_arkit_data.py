@@ -2,8 +2,8 @@ import os
 import pickle
 from tqdm import tqdm
 
-from tools.kp_reproject import *
-from tools.sync_poses import *
+from .kp_reproject import *
+from .sync_poses import *
 
 # params
 project_path = '/home/sunjiaming/Repositories/NeuralFusion/data/neucon_demo/phone_room_0'

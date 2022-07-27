@@ -5,7 +5,6 @@ import copy
 from PIL import Image
 from torch.utils.data import Dataset
 
-
 class DemoDataset(Dataset):
     def __init__(self, datapath, mode, transforms, nviews, n_scales):
         super(DemoDataset, self).__init__()

@@ -5,11 +5,17 @@ import torch.nn.functional as F
 from torchsparse.tensor import PointTensor
 from loguru import logger
 
-from models.modules import SPVCNN
-from utils import apply_log_transform
+from ..models.modules import SPVCNN
+from ..utils import apply_log_transform
 from .gru_fusion import GRUFusion
-from ops.back_project import back_project
-from ops.generate_grids import generate_grid
+from ..ops.back_project import back_project
+from ..ops.generate_grids import generate_grid
+
+# Check first the availability of CUDA in the system
+if torch.cuda.is_available():
+    DEVICE = torch.device('cuda')
+else:
+    DEVICE = torch.device('cpu')
 
 
 class NeuConNet(nn.Module):
@@ -240,7 +246,7 @@ class NeuConNet(nn.Module):
         n_p = occ_target.sum()
         if n_p == 0:
             logger.warning('target: no valid voxel when computing loss')
-            return torch.Tensor([0.0]).cuda()[0] * tsdf.sum()
+            return torch.Tensor([0.0]).to(DEVICE)[0] * tsdf.sum()
         w_for_1 = (n_all - n_p).float() / n_p
         w_for_1 *= pos_weight
 

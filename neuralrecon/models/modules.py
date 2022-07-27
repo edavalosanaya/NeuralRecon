@@ -5,7 +5,7 @@ import torchsparse.nn as spnn
 from torchsparse.tensor import PointTensor
 from torchsparse.utils import *
 
-from ops.torchsparse_utils import *
+from ..ops.torchsparse_utils import *
 
 __all__ = ['SPVCNN', 'SConv3d', 'ConvGRU']
 

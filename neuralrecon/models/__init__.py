@@ -1,1 +1,1 @@
-from models.neuralrecon import NeuralRecon
+from .neuralrecon import NeuralRecon

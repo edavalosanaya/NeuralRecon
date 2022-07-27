@@ -4,8 +4,7 @@ import torch.nn as nn
 from .backbone import MnasMulti
 from .neucon_network import NeuConNet
 from .gru_fusion import GRUFusion
-from utils import tocuda
-
+from ..utils import tocuda
 
 class NeuralRecon(nn.Module):
     '''
