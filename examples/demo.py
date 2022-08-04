@@ -42,11 +42,11 @@ if __name__ == '__main__':
                      cfg.MODEL.N_VOX, cfg.MODEL.VOXEL_SIZE, random_rotation=False, random_translation=False,
                      paddingXY=0, paddingZ=0, max_epoch=cfg.TRAIN.EPOCHS),
                  nr.datasets.transforms.IntrinsicsPoseToProjection(cfg.TEST.N_VIEWS, 4)]
-    nr.datasets.transforms = nr.datasets.transforms.Compose(transform)
+    transforms = nr.datasets.transforms.Compose(transform)
 
     # Creating dataset
     ARKitDataset = nr.datasets.find_dataset_def(cfg.DATASET)
-    test_dataset = ARKitDataset(cfg.TEST.PATH, "test", nr.datasets.transforms, cfg.TEST.N_VIEWS, len(cfg.MODEL.THRESHOLDS) - 1)
+    test_dataset = ARKitDataset(cfg.TEST.PATH, "test", transforms, cfg.TEST.N_VIEWS, len(cfg.MODEL.THRESHOLDS) - 1)
     data_loader = DataLoader(test_dataset, cfg.BATCH_SIZE, shuffle=False, num_workers=cfg.TEST.N_WORKERS, drop_last=False)
 
     # Creating model
